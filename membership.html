@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership — Darken Shadows Swimming Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean-1:#e8f4fd; --ocean-2:#b8ddf5; --ocean-3:#6db8e8;
+  --ocean-4:#2a8cc4; --ocean-5:#1565a0; --ocean-6:#0d3d6b; --ocean-7:#061e35;
+  --white:#ffffff; --error:#ff4d6d; --success:#00d68f;
+  --font-display:'Cinzel',serif; --font-body:'Raleway',sans-serif;
+  --radius:12px; --radius-sm:6px;
+  --shadow:0 8px 40px rgba(6,30,53,.55);
+  --transition:.25s cubic-bezier(.4,0,.2,1);
+
+  /* tier accent vars (overridden per card) */
+  --tier-color: #a8a9ad;
+  --tier-bg: rgba(168,169,173,.1);
+  --tier-border: rgba(168,169,173,.3);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--ocean-7);color:var(--ocean-1);min-height:100vh;overflow-x:hidden;}
+
+/* Background */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 75% 55% at 10% 5%, rgba(42,140,196,.2) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 65% at 90% 92%, rgba(21,101,160,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, var(--ocean-7) 38%, var(--ocean-6) 100%);
+  z-index:0;pointer-events:none;
+}
+
+/* subtle grid dots */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:radial-gradient(circle at 1px 1px, rgba(109,184,232,.04) 1px, transparent 0);
+  background-size:32px 32px;pointer-events:none;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2.5rem;
+  background:rgba(6,30,53,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(109,184,232,.14);
+}
+.nav-logo{
+  font-family:var(--font-display);font-size:1.05rem;font-weight:700;
+  letter-spacing:.14em;color:var(--ocean-3);text-decoration:none;text-transform:uppercase;
+}
+.nav-links{display:flex;gap:1.8rem;align-items:center;}
+.nav-links a{
+  font-size:.82rem;font-weight:600;letter-spacing:.08em;
+  color:var(--ocean-2);text-decoration:none;text-transform:uppercase;
+  transition:color var(--transition);
+}
+.nav-links a:hover,.nav-links a.active{color:var(--ocean-3);}
+.nav-cta{
+  background:linear-gradient(135deg,var(--ocean-5),var(--ocean-4));
+  color:var(--white)!important;padding:.45rem 1.2rem;
+  border-radius:100px;font-size:.78rem!important;
+}
+.nav-user{font-size:.82rem;color:rgba(184,221,245,.6);}
+.nav-user span{color:var(--ocean-2);font-weight:600;}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;z-index:1;
+  text-align:center;padding:5.5rem 2rem 3.5rem;
+}
+.hero-eyebrow{
+  font-size:.7rem;font-weight:700;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--ocean-3);
+  margin-bottom:1rem;opacity:0;animation:fadeUp .6s .1s ease forwards;
+}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.5rem,5.5vw,4.2rem);
+  font-weight:900;line-height:1.07;letter-spacing:.04em;
+  color:var(--white);margin-bottom:1.2rem;
+  opacity:0;animation:fadeUp .6s .24s ease forwards;
+}
+.hero h1 em{
+  color:var(--ocean-3);font-style:normal;
+  display:block;
+}
+.hero-sub{
+  font-size:1rem;font-weight:300;line-height:1.8;
+  color:var(--ocean-2);max-width:520px;margin:0 auto 2rem;
+  opacity:0;animation:fadeUp .6s .38s ease forwards;
+}
+.hero-line{
+  width:72px;height:2px;margin:0 auto;
+  background:linear-gradient(90deg,transparent,var(--ocean-3),transparent);
+  opacity:0;animation:fadeUp .6s .5s ease forwards;
+}
+
+/* ── Plans grid ───────────────────────────────────────────────────────────── */
+.plans-section{position:relative;z-index:1;padding:3.5rem 3vw 2rem;max-width:1260px;margin:0 auto;}
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1.2rem;
+  align-items:start;
+}
+
+/* ── Plan card ────────────────────────────────────────────────────────────── */
+.plan-card{
+  background:rgba(13,61,107,.35);
+  border:1px solid rgba(109,184,232,.18);
+  border-radius:16px;
+  padding:2rem 1.6rem 1.8rem;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform var(--transition),border-color var(--transition),box-shadow var(--transition);
+  backdrop-filter:blur(10px);
+  opacity:0;
+  animation:fadeUp .55s forwards;
+}
+.plan-card:nth-child(1){animation-delay:.15s;}
+.plan-card:nth-child(2){animation-delay:.25s;}
+.plan-card:nth-child(3){animation-delay:.35s;}
+.plan-card:nth-child(4){animation-delay:.45s;}
+
+.plan-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--tier-color);
+  border-radius:16px 16px 0 0;
+  opacity:.7;
+}
+.plan-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 24px 60px rgba(0,0,0,.4),0 0 0 1px var(--tier-border);
+}
+.plan-card.selected{
+  border-color:var(--tier-color);
+  box-shadow:0 0 0 2px var(--tier-color),0 20px 50px rgba(0,0,0,.35);
+}
+.plan-card.popular-card{
+  border-color:rgba(212,175,55,.4);
+}
+
+.popular-badge{
+  display:inline-block;
+  background:rgba(212,175,55,.2);
+  border:1px solid rgba(212,175,55,.5);
+  color:#f5d060;
+  font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  padding:.26rem .8rem;border-radius:100px;
+  margin-bottom:1rem;
+}
+
+.tier-icon{font-size:2rem;margin-bottom:.9rem;display:block;}
+
+.tier-tag{
+  font-size:.63rem;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--tier-color);
+  margin-bottom:.35rem;
+}
+
+.tier-name{
+  font-family:var(--font-display);
+  font-size:1.35rem;font-weight:700;
+  color:var(--white);
+  margin-bottom:.25rem;letter-spacing:.04em;
+}
+
+.tier-tagline{
+  font-size:.82rem;font-weight:300;
+  color:var(--ocean-2);margin-bottom:1.4rem;
+}
+
+.tier-price-wrap{
+  display:flex;align-items:baseline;gap:.3rem;
+  margin-bottom:1.5rem;padding-bottom:1.4rem;
+  border-bottom:1px solid rgba(109,184,232,.12);
+}
+.tier-currency{font-size:.9rem;font-weight:600;color:var(--tier-color);}
+.tier-price{
+  font-family:var(--font-display);
+  font-size:2.2rem;font-weight:900;
+  color:var(--tier-color);line-height:1;
+}
+.tier-per{font-size:.75rem;font-weight:400;color:var(--ocean-3);}
+
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.2rem;}
+.feature-list li{
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:.83rem;font-weight:400;color:var(--ocean-1);
+  line-height:1.4;
+}
+.feature-list li .check{color:var(--tier-color);flex-shrink:0;margin-top:1px;font-size:.9rem;}
+
+.not-included-list{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.4rem;}
+.not-included-list li{
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:.78rem;font-weight:300;color:rgba(184,221,245,.4);
+  line-height:1.4;text-decoration:line-through;
+}
+.not-included-list li .cross{color:rgba(184,221,245,.25);flex-shrink:0;font-size:.9rem;}
+
+.btn-select{
+  width:100%;padding:.75rem;
+  background:var(--tier-bg);
+  border:1px solid var(--tier-border);
+  border-radius:var(--radius-sm);
+  font-family:var(--font-display);
+  font-size:.8rem;font-weight:600;letter-spacing:.14em;
+  color:var(--tier-color);text-transform:uppercase;
+  cursor:pointer;
+  transition:background var(--transition),box-shadow var(--transition),transform var(--transition);
+}
+.btn-select:hover{
+  background:rgba(109,184,232,.12);
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  transform:translateY(-1px);
+}
+.plan-card.selected .btn-select{
+  background:var(--tier-color);
+  color:var(--ocean-7);
+  font-weight:700;
+}
+
+/* ── Compare note ─────────────────────────────────────────────────────────── */
+.compare-note{
+  position:relative;z-index:1;
+  text-align:center;padding:.5rem 2rem 3rem;
+  font-size:.8rem;font-weight:300;color:var(--ocean-3);
+}
+.compare-note a{color:var(--ocean-3);text-decoration:underline;cursor:pointer;}
+
+/* ── Enrollment form area ─────────────────────────────────────────────────── */
+.enroll-section{
+  position:relative;z-index:1;
+  max-width:820px;margin:0 auto;
+  padding:0 2rem 6rem;
+}
+.section-label{font-size:.72rem;font-weight:600;letter-spacing:.2em;color:var(--ocean-3);text-transform:uppercase;margin-bottom:.6rem;}
+.section-title{font-family:var(--font-display);font-size:clamp(1.5rem,2.5vw,2rem);font-weight:700;color:var(--white);line-height:1.2;margin-bottom:.6rem;}
+.section-divider{width:50px;height:2px;background:linear-gradient(90deg,var(--ocean-3),transparent);margin-bottom:2rem;}
+
+/* selected plan summary pill */
+.plan-summary{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(13,61,107,.5);
+  border:1px solid rgba(109,184,232,.25);
+  border-radius:var(--radius);padding:1rem 1.4rem;
+  margin-bottom:1.5rem;
+  backdrop-filter:blur(10px);
+}
+.plan-summary-left{display:flex;align-items:center;gap:.9rem;}
+.plan-summary-icon{font-size:1.6rem;}
+.plan-summary-name{
+  font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--white);
+}
+.plan-summary-sub{font-size:.78rem;color:var(--ocean-2);margin-top:.1rem;}
+.plan-summary-price{
+  font-family:var(--font-display);font-size:1.4rem;font-weight:900;
+  color:var(--ocean-3);
+}
+
+/* form cards */
+.form-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(109,184,232,.14);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  margin-bottom:1.5rem;
+}
+.form-card:last-child{margin-bottom:0;}
+.form-section-head{
+  background:rgba(42,140,196,.07);
+  border-bottom:1px solid rgba(109,184,232,.13);
+  padding:.95rem 1.8rem;
+  display:flex;align-items:center;gap:.7rem;
+  font-family:var(--font-display);font-size:.76rem;font-weight:600;
+  letter-spacing:.17em;color:var(--ocean-3);text-transform:uppercase;
+}
+.step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--ocean-5),var(--ocean-4));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:700;color:var(--white);flex-shrink:0;
+}
+.form-body{padding:2rem 1.8rem;}
+
+.login-gate{text-align:center;padding:4rem 2rem;}
+.login-gate p{font-size:1rem;color:var(--ocean-2);margin-bottom:1.5rem;font-weight:300;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.form-group{display:flex;flex-direction:column;gap:.45rem;}
+.form-group.span-2{grid-column:span 2;}
+label{font-size:.75rem;font-weight:600;letter-spacing:.09em;color:var(--ocean-2);text-transform:uppercase;}
+label .req{color:var(--ocean-3);margin-left:2px;}
+
+input[type="text"],input[type="email"],input[type="tel"],
+input[type="date"],input[type="number"],select,textarea{
+  width:100%;padding:.72rem 1rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(109,184,232,.18);
+  border-radius:var(--radius-sm);
+  font-family:var(--font-body);font-size:.9rem;font-weight:400;
+  color:var(--white);
+  transition:border-color var(--transition),box-shadow var(--transition);
+  outline:none;-webkit-appearance:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--ocean-4);
+  box-shadow:0 0 0 3px rgba(42,140,196,.18);
+}
+select option{background:var(--ocean-6);}
+textarea{resize:vertical;min-height:90px;}
+
+/* duration grid */
+.duration-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;}
+.dur-radio{
+  display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(109,184,232,.15);
+  border-radius:var(--radius-sm);padding:.75rem .5rem;
+  cursor:pointer;text-align:center;
+  transition:border-color var(--transition),background var(--transition);
+}
+.dur-radio:has(input:checked){
+  border-color:var(--ocean-4);background:rgba(42,140,196,.12);
+}
+.dur-radio input[type="radio"]{display:none;}
+.dur-months{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--white);}
+.dur-label{font-size:.68rem;font-weight:500;color:var(--ocean-3);text-transform:uppercase;letter-spacing:.08em;}
+.dur-saving{font-size:.62rem;font-weight:600;color:#4fc3f7;margin-top:.1rem;}
+
+/* total price display */
+.price-calc{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(42,140,196,.08);
+  border:1px solid rgba(109,184,232,.2);
+  border-radius:var(--radius-sm);
+  padding:1rem 1.3rem;margin-bottom:1.5rem;
+}
+.price-calc-label{font-size:.78rem;font-weight:600;letter-spacing:.1em;color:var(--ocean-2);text-transform:uppercase;}
+.price-calc-sub{font-size:.72rem;color:var(--ocean-3);margin-top:.2rem;}
+.price-calc-total{font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--ocean-3);}
+
+.opt-row{
+  display:flex;align-items:center;gap:.75rem;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(109,184,232,.14);
+  border-radius:var(--radius-sm);padding:.75rem 1rem;cursor:pointer;
+  transition:border-color var(--transition),background var(--transition);
+}
+.opt-row:has(input:checked){border-color:var(--ocean-4);background:rgba(42,140,196,.09);}
+.opt-row input[type="checkbox"]{width:16px;height:16px;accent-color:var(--ocean-4);cursor:pointer;}
+.opt-row span{font-size:.88rem;font-weight:500;color:var(--ocean-1);}
+
+/* Alerts */
+.alert{border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:.88rem;font-weight:500;line-height:1.6;}
+.alert-error{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3;}
+.alert-error ul{padding-left:1.2rem;}
+.alert-success{background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.3);color:var(--success);text-align:center;padding:2.5rem 2rem;}
+.alert-success h3{font-family:var(--font-display);font-size:1.4rem;margin-bottom:.6rem;}
+.booking-ref{display:inline-block;margin-top:.9rem;background:rgba(0,214,143,.12);border:1px solid rgba(0,214,143,.28);border-radius:100px;padding:.38rem 1.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:.18em;color:var(--success);}
+
+/* Submit button */
+.btn-submit{
+  width:100%;padding:1.05rem;margin-top:1.5rem;
+  background:linear-gradient(135deg,var(--ocean-5),var(--ocean-4));
+  border:none;border-radius:var(--radius-sm);
+  font-family:var(--font-display);font-size:.92rem;font-weight:700;
+  letter-spacing:.16em;color:var(--white);text-transform:uppercase;
+  cursor:pointer;
+  transition:opacity var(--transition),transform var(--transition),box-shadow var(--transition);
+  box-shadow:0 4px 20px rgba(42,140,196,.35);
+}
+.btn-submit:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 32px rgba(42,140,196,.5);}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.9rem;border-radius:100px;font-family:var(--font-body);font-size:.88rem;font-weight:600;letter-spacing:.08em;cursor:pointer;text-decoration:none;transition:all var(--transition);border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--ocean-5),var(--ocean-4));color:var(--white);box-shadow:0 4px 18px rgba(42,140,196,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(42,140,196,.45);}
+.btn-outline{background:transparent;border:1px solid rgba(109,184,232,.4);color:var(--ocean-2);}
+.btn-outline:hover{background:rgba(109,184,232,.08);}
+
+/* no-plan banner */
+.no-plan-banner{
+  text-align:center;padding:2.5rem;
+  background:rgba(42,140,196,.06);
+  border:1px solid rgba(109,184,232,.15);
+  border-radius:var(--radius);
+  font-size:.95rem;color:var(--ocean-2);
+  font-weight:300;line-height:1.7;
+}
+.no-plan-banner strong{color:var(--ocean-3);font-weight:600;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media(max-width:1024px){
+  .plans-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem;}
+  .nav-links{display:none;}
+  .plans-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto;}
+  .plans-section{padding:2.5rem 1.5rem 1.5rem;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-group.span-2{grid-column:span 1;}
+  .form-body{padding:1.5rem 1.2rem;}
+  .duration-grid{grid-template-columns:repeat(2,1fr);}
+  .enroll-section{padding:0 1.2rem 4rem;}
+}
+
+footer{position:relative;z-index:1;text-align:center;padding:2.5rem;border-top:1px solid rgba(109,184,232,.08);font-size:.78rem;font-weight:300;color:var(--ocean-3);letter-spacing:.06em;}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────────────────────────────────────── -->
+<nav>
+  <a href="index.html" class="nav-logo">Darken Shadows SC</a>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="program.html">Programs</a>
+    <a href="membership.html" class="active">Membership</a>
+      </div>
+      <div class="nav-user">Welcome, <span>Guest</span></div>
+  </nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <p class="hero-eyebrow">Darken Shadows Swimming Club</p>
+  <h1>Choose Your <em>Membership</em></h1>
+  <p class="hero-sub">Four tiers built for every ambition — from your first lap to the national podium. Each plan gives you access to world-class facilities and expert coaching.</p>
+  <div class="hero-line"></div>
+</div>
+
+<!-- ── Plans grid ──────────────────────────────────────────────────────────── -->
+<div class="plans-section">
+  <div class="plans-grid">
+
+        <div class="plan-card  "
+         id="card-bronze"
+         style="--tier-color:#cd7f32;--tier-bg:rgba(205,127,50,.1);--tier-border:rgba(205,127,50,.3);"
+         onclick="selectPlan('bronze')">
+
+      
+      <span class="tier-icon">🥉</span>
+      <div class="tier-tag">Bronze Tier</div>
+      <div class="tier-name">Bronze</div>
+      <div class="tier-tagline">The first stroke</div>
+
+      <div class="tier-price-wrap">
+        <span class="tier-currency">₹</span>
+        <span class="tier-price">499</span>
+        <span class="tier-per">/ month</span>
+      </div>
+
+      <ul class="feature-list">
+                  <li><span class="check">✓</span>Access to 25m warm-up pool</li>
+                  <li><span class="check">✓</span>3 coached sessions / week</li>
+                  <li><span class="check">✓</span>Locker &amp; changing suite access</li>
+                  <li><span class="check">✓</span>Club newsletter &amp; event updates</li>
+                  <li><span class="check">✓</span>Basic progress tracking</li>
+              </ul>
+
+            <ul class="not-included-list">
+                  <li><span class="cross">✕</span>Competition pool access</li>
+                  <li><span class="cross">✕</span>Dryland gym access</li>
+                  <li><span class="cross">✕</span>Video analysis</li>
+                  <li><span class="cross">✕</span>Guest passes</li>
+              </ul>
+      
+      <button type="button" class="btn-select" id="btn-bronze">
+        Select Plan      </button>
+
+    </div>
+        <div class="plan-card  "
+         id="card-silver"
+         style="--tier-color:#a8a9ad;--tier-bg:rgba(168,169,173,.1);--tier-border:rgba(168,169,173,.3);"
+         onclick="selectPlan('silver')">
+
+      
+      <span class="tier-icon">🥈</span>
+      <div class="tier-tag">Silver Tier</div>
+      <div class="tier-name">Silver</div>
+      <div class="tier-tagline">Steady momentum</div>
+
+      <div class="tier-price-wrap">
+        <span class="tier-currency">₹</span>
+        <span class="tier-price">999</span>
+        <span class="tier-per">/ month</span>
+      </div>
+
+      <ul class="feature-list">
+                  <li><span class="check">✓</span>Full 50m competition pool access</li>
+                  <li><span class="check">✓</span>5 coached sessions / week</li>
+                  <li><span class="check">✓</span>Dryland gym access</li>
+                  <li><span class="check">✓</span>Locker &amp; premium changing suite</li>
+                  <li><span class="check">✓</span>Monthly performance report</li>
+                  <li><span class="check">✓</span>2 guest passes / month</li>
+              </ul>
+
+            <ul class="not-included-list">
+                  <li><span class="cross">✕</span>Video analysis</li>
+                  <li><span class="cross">✕</span>Personal coach assignment</li>
+                  <li><span class="cross">✕</span>Priority lane booking</li>
+              </ul>
+      
+      <button type="button" class="btn-select" id="btn-silver">
+        Select Plan      </button>
+
+    </div>
+        <div class="plan-card  popular-card"
+         id="card-gold"
+         style="--tier-color:#d4af37;--tier-bg:rgba(212,175,55,.1);--tier-border:rgba(212,175,55,.35);"
+         onclick="selectPlan('gold')">
+
+              <div class="popular-badge">⭐ Most Popular</div>
+      
+      <span class="tier-icon">🥇</span>
+      <div class="tier-tag">Gold Tier</div>
+      <div class="tier-name">Gold</div>
+      <div class="tier-tagline">Chase the podium</div>
+
+      <div class="tier-price-wrap">
+        <span class="tier-currency">₹</span>
+        <span class="tier-price">1,799</span>
+        <span class="tier-per">/ month</span>
+      </div>
+
+      <ul class="feature-list">
+                  <li><span class="check">✓</span>Unlimited pool access (50m + 25m)</li>
+                  <li><span class="check">✓</span>Unlimited coached sessions</li>
+                  <li><span class="check">✓</span>Dryland gym &amp; recovery centre</li>
+                  <li><span class="check">✓</span>Underwater video analysis (monthly)</li>
+                  <li><span class="check">✓</span>Personal coach assignment</li>
+                  <li><span class="check">✓</span>Priority lane booking</li>
+                  <li><span class="check">✓</span>4 guest passes / month</li>
+                  <li><span class="check">✓</span>Quarterly competition entry support</li>
+              </ul>
+
+            <ul class="not-included-list">
+                  <li><span class="cross">✕</span>Dedicated 1-on-1 head coach</li>
+                  <li><span class="cross">✕</span>Sport psychology sessions</li>
+              </ul>
+      
+      <button type="button" class="btn-select" id="btn-gold">
+        Select Plan      </button>
+
+    </div>
+        <div class="plan-card  "
+         id="card-platinum"
+         style="--tier-color:#e5e4e2;--tier-bg:rgba(229,228,226,.08);--tier-border:rgba(229,228,226,.35);"
+         onclick="selectPlan('platinum')">
+
+      
+      <span class="tier-icon">💎</span>
+      <div class="tier-tag">Platinum Tier</div>
+      <div class="tier-name">Platinum</div>
+      <div class="tier-tagline">No limits</div>
+
+      <div class="tier-price-wrap">
+        <span class="tier-currency">₹</span>
+        <span class="tier-price">2,999</span>
+        <span class="tier-per">/ month</span>
+      </div>
+
+      <ul class="feature-list">
+                  <li><span class="check">✓</span>Everything in Gold</li>
+                  <li><span class="check">✓</span>Dedicated head coach (1-on-1)</li>
+                  <li><span class="check">✓</span>Weekly video analysis sessions</li>
+                  <li><span class="check">✓</span>Full Mental Conditioning access</li>
+                  <li><span class="check">✓</span>Physio assessment &amp; recovery priority</li>
+                  <li><span class="check">✓</span>Unlimited guest passes</li>
+                  <li><span class="check">✓</span>VIP poolside locker suite</li>
+                  <li><span class="check">✓</span>Meet entry covered (club events)</li>
+                  <li><span class="check">✓</span>Annual performance review with MD</li>
+              </ul>
+
+      
+      <button type="button" class="btn-select" id="btn-platinum">
+        Select Plan      </button>
+
+    </div>
+    
+  </div><!-- /plans-grid -->
+
+  <p class="compare-note" style="margin-top:1.4rem;">
+    All memberships are subject to a one-time INR 50 registration admin fee &nbsp;·&nbsp;
+    Cancel or upgrade any time &nbsp;·&nbsp;
+    <a onclick="document.getElementById('enroll').scrollIntoView({behavior:'smooth'})">Jump to enrollment ↓</a>
+  </p>
+</div>
+
+<!-- ── Enrollment form ─────────────────────────────────────────────────────── -->
+<div id="enroll" class="enroll-section">
+  <p class="section-label">Get Started</p>
+  <h2 class="section-title">Membership Enrollment</h2>
+  <div class="section-divider"></div>
+
+  
+    
+    <!-- No plan selected hint -->
+    <div id="no-plan-msg" class="no-plan-banner" style="">
+      <strong>↑ Pick a plan above</strong> to continue — select Bronze, Silver, Gold or Platinum to unlock the enrollment form.
+    </div>
+
+    <form method="POST" action="#enroll" id="enrollForm" style="display:none">
+      <input type="hidden" name="plan" id="plan-input" value="">
+
+      <!-- selected plan summary -->
+            <div class="plan-summary" id="plan-summary-bar" style="display:none;">
+        <div class="plan-summary-left">
+          <span class="plan-summary-icon" id="sum-icon"></span>
+          <div>
+            <div class="plan-summary-name" id="sum-name"></div>
+            <div class="plan-summary-sub" id="sum-sub"></div>
+          </div>
+        </div>
+        <div class="plan-summary-price" id="total-display"></div>
+      </div>
+      
+      <!-- STEP 1 — Personal Details -->
+      <div class="form-card">
+        <div class="form-section-head">
+          <span class="step-num">1</span> Personal Details
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" name="full_name" placeholder="Your full name as on ID"
+                     value="">
+            </div>
+            <div class="form-group">
+              <label>Date of Birth <span class="req">*</span></label>
+              <input type="date" name="dob" value="">
+            </div>
+            <div class="form-group">
+              <label>Emergency Contact <span class="req">*</span></label>
+              <input type="text" name="emergency_contact" placeholder="Name and phone number"
+                     value="">
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" name="phone" placeholder="+91 98765 43210"
+                     value="">
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" placeholder="you@email.com"
+                     value="">
+            </div>
+            <div class="form-group span-2">
+              <label>Medical / Physical Notes</label>
+              <textarea name="medical_notes"
+                        placeholder="Any conditions, injuries, or information the coaching team should know…"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 — Duration & Start Date -->
+      <div class="form-card">
+        <div class="form-section-head">
+          <span class="step-num">2</span> Duration &amp; Start Date
+        </div>
+        <div class="form-body">
+
+          <div class="form-group" style="margin-bottom:1.4rem;">
+            <label style="margin-bottom:.75rem;">Membership Duration <span class="req">*</span></label>
+            <div class="duration-grid">
+                            <label class="dur-radio">
+                <input type="radio" name="duration_months" value="1"
+                       checked                       onchange="updateTotal()">
+                <span class="dur-months">1</span>
+                <span class="dur-label">1 Month</span>
+                              </label>
+                            <label class="dur-radio">
+                <input type="radio" name="duration_months" value="3"
+                                              onchange="updateTotal()">
+                <span class="dur-months">3</span>
+                <span class="dur-label">3 Months</span>
+                <span class="dur-saving">Save 5%</span>              </label>
+                            <label class="dur-radio">
+                <input type="radio" name="duration_months" value="6"
+                                              onchange="updateTotal()">
+                <span class="dur-months">6</span>
+                <span class="dur-label">6 Months</span>
+                <span class="dur-saving">Save 10%</span>              </label>
+                            <label class="dur-radio">
+                <input type="radio" name="duration_months" value="12"
+                                              onchange="updateTotal()">
+                <span class="dur-months">12</span>
+                <span class="dur-label">12 Months</span>
+                <span class="dur-saving">Save 15%</span>              </label>
+                          </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Preferred Start Date <span class="req">*</span></label>
+              <input type="date" name="start_date"
+                     min="2026-08-30"
+                     value="2026-08-30">
+            </div>
+            <div class="form-group" style="justify-content:flex-end;">
+              <label style="margin-bottom:.6rem;">Auto-Renewal</label>
+              <label class="opt-row">
+                <input type="checkbox" name="auto_renew" value="1"
+                       >
+                <span>🔄 Auto-renew membership at end of term</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 — Payment -->
+      <div class="form-card">
+        <div class="form-section-head">
+          <span class="step-num">3</span> Payment
+        </div>
+        <div class="form-body">
+
+          <div class="price-calc">
+            <div>
+              <p class="price-calc-label" id="calc-label">Membership Fee</p>
+              <p class="price-calc-sub" id="calc-sub">Select duration above to see total</p>
+            </div>
+            <div class="price-calc-total" id="calc-total">
+              ₹—            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Payment Method <span class="req">*</span></label>
+              <select name="payment_method">
+                <option value="">— Select —</option>
+                                <option value="cash" >Cash at Reception</option>
+                                <option value="bank_transfer" >Bank Transfer</option>
+                                <option value="online" >Online Payment</option>
+                                <option value="cheque" >Cheque</option>
+                                <option value="card" >Credit / Debit Card</option>
+                              </select>
+            </div>
+            <div class="form-group">
+              <label>Payment / Transaction Reference</label>
+              <input type="text" name="payment_reference" placeholder="Transaction or receipt number"
+                     value="">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">Confirm Membership →</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+<footer>&copy; 2026 Darken Shadows Swimming Club &nbsp;·&nbsp; All Rights Reserved</footer>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SQL migration note (add to pool.sql before using this page):
+
+     CREATE TABLE IF NOT EXISTS memberships (
+         id                 INT UNSIGNED    AUTO_INCREMENT PRIMARY KEY,
+         user_id            INT UNSIGNED    NOT NULL,
+         plan               ENUM('bronze','silver','gold','platinum') NOT NULL,
+         full_name          VARCHAR(120)    NOT NULL,
+         dob                DATE            NOT NULL,
+         phone              VARCHAR(20)     DEFAULT NULL,
+         email              VARCHAR(180)    DEFAULT NULL,
+         emergency_contact  VARCHAR(120)    NOT NULL,
+         medical_notes      TEXT            DEFAULT NULL,
+         start_date         DATE            NOT NULL,
+         end_date           DATE            NOT NULL,
+         duration_months    TINYINT         NOT NULL DEFAULT 1,
+         auto_renew         TINYINT(1)      NOT NULL DEFAULT 0,
+         payment_amount     DECIMAL(9,2)    NOT NULL,
+         payment_method     ENUM('cash','bank_transfer','online','cheque','card') DEFAULT NULL,
+         payment_reference  VARCHAR(100)    DEFAULT NULL,
+         status             ENUM('pending','active','paused','expired','cancelled') NOT NULL DEFAULT 'pending',
+         created_at         TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+         updated_at         TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+         CONSTRAINT fk_mem_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+     Also add 'membership' to the bookings.program ENUM:
+     ALTER TABLE bookings MODIFY COLUMN program ENUM(
+         'junior_development','competitive_squad','elite_coaching',
+         'adult_fitness_swim','mental_conditioning','masters_program','membership'
+     ) NOT NULL;
+══════════════════════════════════════════════════════════════════════════ -->
+
+<script>
+// ── Plan data (mirrored from PHP) ────────────────────────────────────────────
+const planData = [{"key":"bronze","name":"Bronze","tagline":"The first stroke","icon":"\ud83e\udd49","price":499,"color":"#cd7f32","colorBg":"rgba(205,127,50,.1)","colorBorder":"rgba(205,127,50,.3)"},{"key":"silver","name":"Silver","tagline":"Steady momentum","icon":"\ud83e\udd48","price":999,"color":"#a8a9ad","colorBg":"rgba(168,169,173,.1)","colorBorder":"rgba(168,169,173,.3)"},{"key":"gold","name":"Gold","tagline":"Chase the podium","icon":"\ud83e\udd47","price":1799,"color":"#d4af37","colorBg":"rgba(212,175,55,.1)","colorBorder":"rgba(212,175,55,.35)"},{"key":"platinum","name":"Platinum","tagline":"No limits","icon":"\ud83d\udc8e","price":2999,"color":"#e5e4e2","colorBg":"rgba(229,228,226,.08)","colorBorder":"rgba(229,228,226,.35)"}];
+
+const planMap = {};
+planData.forEach(p => planMap[p.key] = p);
+
+let currentPlan = '';
+
+// ── Select plan ───────────────────────────────────────────────────────────────
+function selectPlan(key) {
+    currentPlan = key;
+    const plan = planMap[key];
+
+    // Update all cards
+    document.querySelectorAll('.plan-card').forEach(card => {
+        card.classList.toggle('selected', card.id === 'card-' + key);
+    });
+    document.querySelectorAll('.btn-select').forEach(btn => {
+        btn.textContent = btn.id === 'btn-' + key ? '✓ Selected' : 'Select Plan';
+    });
+
+    // Set hidden input
+    document.getElementById('plan-input').value = key;
+
+    // Show form
+    document.getElementById('enrollForm').style.display = '';
+    document.getElementById('no-plan-msg').style.display = 'none';
+
+    // Update summary bar
+    const bar = document.getElementById('plan-summary-bar');
+    bar.style.display = '';
+    bar.style.borderColor = plan.colorBorder;
+    document.getElementById('sum-icon') && (document.getElementById('sum-icon').textContent = plan.icon);
+    document.getElementById('sum-name') && (document.getElementById('sum-name').textContent = plan.name + ' Membership');
+    document.getElementById('sum-sub')  && (document.getElementById('sum-sub').textContent  = plan.tagline + ' · ₹' + plan.price.toLocaleString('en-IN') + ' / month');
+
+    updateTotal();
+
+    // Smooth scroll to form
+    setTimeout(() => document.getElementById('enroll').scrollIntoView({behavior:'smooth', block:'start'}), 80);
+}
+
+// ── Update total price ────────────────────────────────────────────────────────
+function updateTotal() {
+    if (!currentPlan) return;
+    const plan = planMap[currentPlan];
+    if (!plan) return;
+
+    const durInput = document.querySelector('input[name="duration_months"]:checked');
+    const months   = durInput ? parseInt(durInput.value) : 1;
+
+    // Discounts
+    const discounts = { 1: 0, 3: 0.05, 6: 0.10, 12: 0.15 };
+    const disc = discounts[months] || 0;
+    const total = Math.round(plan.price * months * (1 - disc));
+
+    const durLabels = { 1: '1 Month', 3: '3 Months', 6: '6 Months', 12: '12 Months' };
+    const saved = Math.round(plan.price * months * disc);
+
+    // Calc bar
+    const calcLabel = document.getElementById('calc-label');
+    const calcSub   = document.getElementById('calc-sub');
+    const calcTotal = document.getElementById('calc-total');
+    const totalDisp = document.getElementById('total-display');
+
+    if (calcLabel) calcLabel.textContent = plan.name + ' Membership — ' + (durLabels[months] || months + ' months');
+    if (calcSub)   calcSub.textContent   = saved > 0 ? 'Saving ₹' + saved.toLocaleString('en-IN') + ' with this duration' : 'Full price · no discount for this duration';
+    if (calcTotal) calcTotal.textContent = '₹' + total.toLocaleString('en-IN');
+    if (totalDisp) totalDisp.textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(function() {
+    if (currentPlan) {
+        // Re-apply selected state on page load (after PHP POST error)
+        document.querySelectorAll('.plan-card').forEach(card => {
+            card.classList.toggle('selected', card.id === 'card-' + currentPlan);
+        });
+        document.querySelectorAll('.btn-select').forEach(btn => {
+            btn.textContent = btn.id === 'btn-' + currentPlan ? '✓ Selected' : 'Select Plan';
+        });
+        updateTotal();
+    }
+})();
+</script>
+
+<script>
+document.querySelectorAll('form').forEach(function(form){
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ref = 'DS-' + Math.random().toString(36).substring(2,8).toUpperCase();
+    var msg = document.createElement('div');
+    msg.setAttribute('style', 'max-width:640px;margin:2rem auto;padding:2.2rem 2rem;border-radius:14px;'
+      + 'background:rgba(0,190,140,0.10);border:1px solid rgba(0,220,170,0.4);'
+      + 'text-align:center;font-family:inherit;color:#eafff7;');
+    msg.innerHTML = '<div style="font-size:2rem;margin-bottom:0.6rem;">&#10003;</div>'
+      + '<div style="font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;">Thanks for submitting!</div>'
+      + '<div style="opacity:0.85;font-size:0.92rem;line-height:1.6;">Your demo booking reference is <strong>' + ref + '</strong>.<br>'
+      + 'This is a static portfolio demo &mdash; no data is sent or stored anywhere.</div>';
+    form.style.display = 'none';
+    form.parentNode.insertBefore(msg, form);
+    msg.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+});
+</script>
+
+</body>
+</html>
